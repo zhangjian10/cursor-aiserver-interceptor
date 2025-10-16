@@ -95,7 +95,11 @@ def parse_grpc_messages(data: bytes, method: str, direction: str):
 
 def request(flow: http.HTTPFlow):
     # Only process if the URL contains the target service.
-    if "aiserver.v1.AiService" not in flow.request.url:
+    if (
+        "aiserver.v1.AiService" not in flow.request.url
+        or "FileSyncService" not in flow.request.url
+        or "CppService" in flow.request.url
+    ):
         return
 
     # Also check for expected content type.
@@ -105,7 +109,7 @@ def request(flow: http.HTTPFlow):
         and "application/connect+proto" not in content_type
     ):
         return
-
+    
     # Add flow to the list if it's relevant
     if flow not in captured_flows:
         captured_flows.append(flow)
